@@ -1,0 +1,27 @@
+#!/bin/bash
+
+sed -i s#Defaults.*requiretty#Defaults\ \!requiretty#g /etc/sudoers
+cd /tmp/
+echo "Downloading the rpm"
+wget  https://s3-us-west-2.amazonaws.com/cincdbucket/chef-12.19.36-1.el7.x86_64.rpm
+
+echo "Installating the rpm"
+
+sudo rpm -ivh *.rpm
+
+sudo mkdir -p /etc/chef
+
+cd /etc/chef
+
+wget https://s3-us-west-2.amazonaws.com/cincdbucket/client.rb
+wget https://s3-us-west-2.amazonaws.com/cincdbucket/knife.rb
+wget https://s3-us-west-2.amazonaws.com/cincdbucket/harishreddy22.pem
+chmod 400 harishreddy22.pem
+sudo chef-client -o recipe[test::docs_example]
+
+
+cd /opt/tomcat_docs/webapps
+#wget http://192.168.1.35:8081/repository/maven-releases/com/mkyong/CounterWebApp/1.9.7.6/CounterWebApp-1.9.7.6.war
+wget http://52.33.100.249:8081/nexus/service/local/repositories/releases/content/com/mkyong/CounterWebApp/1.2.3.4/CounterWebApp-1.2.3.4.war
+#./opt/tomcat/bin/shutdown.shcd /opt/tomcat_docs/bin
+./startup.sh
